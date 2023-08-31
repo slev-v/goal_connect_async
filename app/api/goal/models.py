@@ -1,4 +1,4 @@
-from typing import AsyncIterator, List
+from typing import AsyncIterator
 
 from fastapi import HTTPException, status
 
@@ -6,7 +6,7 @@ from app.api.goal.utils import check_access_to_goal
 
 from .schemas import TargetRequest
 from app.db import AsyncSession
-from app.models import Goal, GoalSchema, Target, TargetSchema, User
+from app.models import Goal, GoalSchema, Target, TargetSchema
 
 
 class CreateGoal:
@@ -23,7 +23,7 @@ class CreateGoal:
     ) -> GoalSchema:
         async with self.async_session.begin() as session:
             goal = await Goal.add_goal(
-                session, title, description, private, user_id, targets
+                session, title, description, private, user_id, targets  # type: ignore
             )
             return GoalSchema.model_validate(goal)
 
@@ -55,6 +55,16 @@ class ReadUserGoals:
     ) -> AsyncIterator[GoalSchema]:
         async with self.async_session() as session:
             async for goal in Goal.read_user_goals(session, user_id, limit, offset):
+                yield GoalSchema.model_validate(goal)
+
+
+class ReadPublicGoals:
+    def __init__(self, session: AsyncSession) -> None:
+        self.async_session = session
+
+    async def execute(self, limit: int, offset: int) -> AsyncIterator[GoalSchema]:
+        async with self.async_session() as session:
+            async for goal in Goal.read_public_goals(session, limit, offset):
                 yield GoalSchema.model_validate(goal)
 
 

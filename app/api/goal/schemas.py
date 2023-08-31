@@ -1,6 +1,4 @@
-from typing import List
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.models import GoalSchema
 
@@ -17,6 +15,7 @@ class GoalRequest(Goal):
 
 class GoalResponse(Goal):
     id: int
+    user_id: int
 
 
 class Target(BaseModel):

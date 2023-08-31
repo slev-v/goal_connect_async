@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, AsyncIterator
+from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String, select, func
+from sqlalchemy import ForeignKey, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Mapped, joinedload, mapped_column, relationship, selectinload
-
-from app.models.schema import TargetSchema
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
 

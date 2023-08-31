@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -31,6 +30,5 @@ class UserSchema(BaseModel):
     username: str
     created_at: datetime
     password: str
-    # goals: list[GoalSchema]
 
     model_config = ConfigDict(from_attributes=True)

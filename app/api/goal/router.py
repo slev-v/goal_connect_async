@@ -15,6 +15,7 @@ from .models import (
     CreateGoal,
     DeleteTarget,
     ReadGoal,
+    ReadPublicGoals,
     ReadUserGoals,
     DeleteGoal,
     UpdateGoal,
@@ -48,6 +49,17 @@ async def get_user_goals(
 ) -> AllGoalsSchemaResponse:
     return AllGoalsSchemaResponse(
         goals=[goal async for goal in use_case.execute(current_user.id, limit, offset)]
+    )
+
+
+@router.get("/public", response_model=AllGoalsWithTargetResponse)
+async def get_public_goals(
+    offset: int = 0,
+    limit: int = 10,
+    use_case: ReadPublicGoals = Depends(ReadPublicGoals),
+) -> AllGoalsSchemaResponse:
+    return AllGoalsSchemaResponse(
+        goals=[goal async for goal in use_case.execute(limit, offset)]
     )
 
 

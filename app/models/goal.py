@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, AsyncIterator, List
+from typing import AsyncIterator
 
-from sqlalchemy import ForeignKey, String, select, func
+from sqlalchemy import ForeignKey, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
-from .schema import GoalSchema
 from .base import Base
 from .user import User
 from .target import Target
@@ -48,6 +47,21 @@ class Goal(Base):
         stmt = (
             select(cls)
             .where(cls.user_id == user_id)
+            .limit(limit)
+            .offset(offset)
+            .options(selectinload(cls.targets))
+        )
+        stream = await session.stream_scalars(stmt.order_by(cls.id))
+        async for row in stream:
+            yield row
+
+    @classmethod
+    async def read_public_goals(
+        cls, session: AsyncSession, limit: int, offset: int
+    ) -> AsyncIterator[Goal]:
+        stmt = (
+            select(cls)
+            .where(cls.private == False)
             .limit(limit)
             .offset(offset)
             .options(selectinload(cls.targets))

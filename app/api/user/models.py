@@ -1,5 +1,3 @@
-from typing import AsyncIterator
-
 from fastapi import HTTPException, status
 
 from app.db import AsyncSession
