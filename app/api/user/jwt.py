@@ -4,8 +4,9 @@ from fastapi import Depends, HTTPException, status
 from jose import jwt, JWTError
 
 from app.config import settings
+from app.models.schema import UserSchema
 from .utils import OAuth2PasswordBearerWithCookie
-from .model import ReadUserByUsername
+from .models import ReadUserByUsername
 
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/user/token")
@@ -26,7 +27,7 @@ def create_access_token(data: dict) -> str:
 
 async def optional_get_current_user_from_token(
     token: str = Depends(optional_oauth2_scheme),
-):
+) -> UserSchema | None:
     if not token:
         return None
 
@@ -36,7 +37,7 @@ async def optional_get_current_user_from_token(
 async def get_current_user_from_token(
     token: str = Depends(oauth2_scheme),
     use_case: ReadUserByUsername = Depends(ReadUserByUsername),
-):
+) -> UserSchema:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

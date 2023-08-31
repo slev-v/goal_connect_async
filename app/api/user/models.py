@@ -59,7 +59,7 @@ class AuthenticateUser:
     def __init__(self, session: AsyncSession) -> None:
         self.async_session = session
 
-    async def execute(self, username: str, password: str):
+    async def execute(self, username: str, password: str) -> UserSchema:
         async with self.async_session() as session:
             credentials_exception = HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -77,6 +77,6 @@ class DeleteUser:
     def __init__(self, session: AsyncSession) -> None:
         self.async_session = session
 
-    async def execute(self, username: str):
+    async def execute(self, username: str) -> None:
         async with self.async_session.begin() as session:
             await User.delete_user(session, username)

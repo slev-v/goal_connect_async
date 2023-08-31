@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.models.schema import UserSchema
 
-from .model import AuthenticateUser, DeleteUser, ReadUserByUsername, RegisterUser
+from .models import AuthenticateUser, DeleteUser, ReadUserByUsername, RegisterUser
 from .schema import (
     UserResponse,
     TokenResponce,
@@ -30,8 +30,9 @@ async def get_current_user(
 async def register_user(
     data: UserRequest,
     use_case: RegisterUser = Depends(RegisterUser),
-) -> UserSchema:
-    return await use_case.execute(data.email, data.username, data.password)
+) -> UserResponse:
+    user = await use_case.execute(data.email, data.username, data.password)
+    return UserResponse(id=user.id, email=user.email, username=user.username)
 
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
@@ -42,12 +43,12 @@ async def delete_user(
     await use_case.execute(current_user.username)
 
 
-@router.post("/token")
+@router.post("/token", response_model=TokenResponce)
 async def login_for_access_token(
     response: Response,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     use_case: AuthenticateUser = Depends(AuthenticateUser),
-):
+) -> TokenResponce:
     user = await use_case.execute(form_data.username, form_data.password)
     if not user:
         raise HTTPException(

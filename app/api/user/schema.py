@@ -1,6 +1,6 @@
 import re
 
-from pydantic import BaseModel, Field, EmailStr, validator
+from pydantic import BaseModel, EmailStr, validator
 from fastapi import HTTPException
 
 

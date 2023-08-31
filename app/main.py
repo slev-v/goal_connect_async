@@ -7,6 +7,6 @@ app = FastAPI()
 app.include_router(router)
 
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 async def health() -> dict:
     return {"message": "it's working"}

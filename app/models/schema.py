@@ -19,8 +19,8 @@ class GoalSchema(BaseModel):
     description: str
     private: bool
     created_at: datetime
+    user_id: int
     targets: list[TargetSchema]
-    creator: int
 
     model_config = ConfigDict(from_attributes=True)
 
