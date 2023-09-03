@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from datetime import datetime
 from typing import AsyncIterator
 
@@ -8,8 +10,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from .base import Base
-from .user import User
 from .target import Target
+
+if TYPE_CHECKING:
+    from .user import User
+    from .target import Target
 
 
 class Goal(Base):
@@ -88,7 +93,12 @@ class Goal(Base):
         )
         session.add(goal)
         for target in targets:
-            target = Target(title=target.title, target=target.target, goal=goal)
+            target = Target(
+                title=target.title,
+                target=target.target,
+                goal=goal,
+                progress=target.progress,
+            )
             session.add(target)
         await session.flush()
 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+from app.api.target.schemas import TargetRequest, TargetResponse
 from app.models import GoalSchema
 
 
@@ -18,19 +19,6 @@ class GoalResponse(Goal):
     user_id: int
 
 
-class Target(BaseModel):
-    title: str
-    target: int
-
-
-class TargetRequest(Target):
-    pass
-
-
-class TargetResponse(Target):
-    id: int
-
-
 class GoalWithTargetRequest(GoalRequest):
     targets: list[TargetRequest]
 
@@ -45,18 +33,3 @@ class AllGoalsWithTargetResponse(BaseModel):
 
 class AllGoalsSchemaResponse(BaseModel):
     goals: list[GoalSchema]
-
-
-#
-#
-# class ReadUserGoalsResponse(BaseModel):
-#     goals: list[GoalSchema]
-#
-#
-# class AddTargetRequest(BaseModel):
-#     title: str
-#     target: int
-#
-#
-# class UpdateTargetRequest(AddTargetRequest):
-#     pass
