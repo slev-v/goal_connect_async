@@ -1,5 +1,5 @@
-from .user import User
-from .goal import Goal
 from .base import Base
+from .goal import Goal
+from .schema import GoalSchema, TargetSchema, UserSchema
 from .target import Target
-from .schema import UserSchema, GoalSchema, TargetSchema
+from .user import User

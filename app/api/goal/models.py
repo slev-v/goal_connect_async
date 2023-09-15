@@ -3,10 +3,10 @@ from typing import AsyncIterator
 from fastapi import HTTPException, status
 
 from app.api.goal.utils import check_access_to_goal
-
-from .schemas import TargetRequest
 from app.db import AsyncSession
 from app.models import Goal, GoalSchema, Target, TargetSchema
+
+from .schemas import TargetRequest
 
 
 class CreateGoal:
@@ -50,9 +50,7 @@ class ReadUserGoals:
     def __init__(self, session: AsyncSession) -> None:
         self.async_session = session
 
-    async def execute(
-        self, user_id: int, limit: int, offset: int
-    ) -> AsyncIterator[GoalSchema]:
+    async def execute(self, user_id: int, limit: int, offset: int) -> AsyncIterator[GoalSchema]:
         async with self.async_session() as session:
             async for goal in Goal.read_user_goals(session, user_id, limit, offset):
                 yield GoalSchema.model_validate(goal)
@@ -79,9 +77,7 @@ class AddTargetToGoal:
             goal_instance = await Goal.read_by_id(session, goal_id)
             check_access_to_goal(goal_instance, user_id)
 
-            target_instance = await Target.add(
-                session, title, target, goal_id, progress
-            )
+            target_instance = await Target.add(session, title, target, goal_id, progress)
             return TargetSchema.model_validate(target_instance)
 
 

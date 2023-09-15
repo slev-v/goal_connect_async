@@ -2,11 +2,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
-from app.models.schema import UserSchema
 from app.api.user.jwt import get_current_user_from_token
+from app.models.schema import UserSchema
 
-from .schemas import TargetResponse, TargetRequest
-from .models import AddTarget, UpdateTarget, DeleteTarget
+from .models import AddTarget, DeleteTarget, UpdateTarget
+from .schemas import TargetRequest, TargetResponse
 
 router = APIRouter(prefix="/target", tags=["target"])
 

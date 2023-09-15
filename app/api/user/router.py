@@ -1,18 +1,17 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.models.schema import UserSchema
 
+from .jwt import create_access_token, get_current_user_from_token
 from .models import AuthenticateUser, DeleteUser, ReadUserByUsername, RegisterUser
 from .schema import (
-    UserResponse,
     TokenResponce,
     UserRequest,
+    UserResponse,
 )
-from .jwt import create_access_token, get_current_user_from_token
-
 
 router = APIRouter(prefix="/user", tags=["user"])
 
@@ -57,9 +56,7 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_access_token(data={"sub": user.username})
-    response.set_cookie(
-        key="access_token", value=f"Bearer {access_token}", httponly=True
-    )
+    response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
     return TokenResponce(access_token=access_token, token_type="bearer")
 
 

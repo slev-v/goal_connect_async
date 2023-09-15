@@ -19,13 +19,9 @@ class Target(Base):
         "id", autoincrement=True, nullable=False, unique=True, primary_key=True
     )
     title: Mapped[str] = mapped_column("title", nullable=False)
-    progress: Mapped[int] = mapped_column(
-        "progress", nullable=False, server_default=text("0")
-    )
+    progress: Mapped[int] = mapped_column("progress", nullable=False, server_default=text("0"))
     target: Mapped[int] = mapped_column("target", nullable=False)
-    goal_id: Mapped[int] = mapped_column(
-        "goal_id", ForeignKey("goal.id"), nullable=False
-    )
+    goal_id: Mapped[int] = mapped_column("goal_id", ForeignKey("goal.id"), nullable=False)
     goal: Mapped[Goal] = relationship("Goal", back_populates="targets")
 
     @classmethod
@@ -37,9 +33,7 @@ class Target(Base):
     async def add(
         cls, session: AsyncSession, title: str, target: int, goal_id: int, progress: int
     ) -> Target:
-        target_cls = Target(
-            title=title, target=target, goal_id=goal_id, progress=progress
-        )
+        target_cls = Target(title=title, target=target, goal_id=goal_id, progress=progress)
         session.add(target_cls)
         await session.flush()
 
@@ -53,9 +47,7 @@ class Target(Base):
         await session.delete(target)
         await session.flush()
 
-    async def update(
-        self, session: AsyncSession, title: str, target: int, progress: int
-    ) -> None:
+    async def update(self, session: AsyncSession, title: str, target: int, progress: int) -> None:
         self.title = title
         self.target = target
         self.progress = progress

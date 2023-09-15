@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from .user.router import router as user_router
 from .goal.router import router as goal_router
 from .target.router import router as target_router
+from .user.router import router as user_router
 
 router = APIRouter()
 

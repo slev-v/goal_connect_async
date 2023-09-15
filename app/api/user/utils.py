@@ -1,9 +1,8 @@
-from typing import Optional
-from typing import Dict
+from typing import Dict, Optional
 
-from fastapi.security import OAuth2
+from fastapi import HTTPException, Request, status
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
-from fastapi import Request, HTTPException, status
+from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
 
 

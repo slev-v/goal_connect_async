@@ -1,7 +1,7 @@
 import re
 
-from pydantic import BaseModel, EmailStr, validator
 from fastapi import HTTPException
+from pydantic import BaseModel, EmailStr, validator
 
 
 class UserResponse(BaseModel):
@@ -21,7 +21,7 @@ class UserRequest(BaseModel):
     password: str
 
     @validator("password")
-    def validate_password(cls, password) -> str:
+    def validate_password(cls, password: str) -> str:
         PASSWORD_PATTERN = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$")
         if not re.match(PASSWORD_PATTERN, password):
             raise HTTPException(

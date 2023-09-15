@@ -1,33 +1,33 @@
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, Query, status
 
-from .schemas import (
-    AllGoalsWithTargetResponse,
-    GoalWithTargetRequest,
-    GoalRequest,
-    GoalWithTargetResponse,
-    AllGoalsSchemaResponse,
-)
-from .models import (
-    CreateGoal,
-    ReadGoal,
-    ReadPublicGoals,
-    ReadUserGoals,
-    DeleteGoal,
-    UpdateGoal,
-)
-from app.models.schema import GoalSchema, UserSchema
 from app.api.user.jwt import (
     get_current_user_from_token,
     optional_get_current_user_from_token,
+)
+from app.models.schema import GoalSchema, UserSchema
+
+from .models import (
+    CreateGoal,
+    DeleteGoal,
+    ReadGoal,
+    ReadPublicGoals,
+    ReadUserGoals,
+    UpdateGoal,
+)
+from .schemas import (
+    AllGoalsSchemaResponse,
+    AllGoalsWithTargetResponse,
+    GoalRequest,
+    GoalWithTargetRequest,
+    GoalWithTargetResponse,
 )
 
 router = APIRouter(prefix="/goal", tags=["goal"])
 
 
-@router.post(
-    "", status_code=status.HTTP_201_CREATED, response_model=GoalWithTargetResponse
-)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=GoalWithTargetResponse)
 async def add_goal(
     data: GoalWithTargetRequest,
     current_user: Annotated[UserSchema, Depends(get_current_user_from_token)],
@@ -53,12 +53,10 @@ async def get_user_goals(
 @router.get("/public", response_model=AllGoalsWithTargetResponse)
 async def get_public_goals(
     offset: int = 0,
-    limit: int = 10,
+    limit: Annotated[int, Query(le=100)] = 10,
     use_case: ReadPublicGoals = Depends(ReadPublicGoals),
 ) -> AllGoalsSchemaResponse:
-    return AllGoalsSchemaResponse(
-        goals=[goal async for goal in use_case.execute(limit, offset)]
-    )
+    return AllGoalsSchemaResponse(goals=[goal async for goal in use_case.execute(limit, offset)])
 
 
 @router.get("/{goal_id}", response_model=GoalWithTargetResponse)
@@ -66,7 +64,7 @@ async def get_goal_by_id(
     goal_id: int,
     current_user: Annotated[UserSchema, Depends(optional_get_current_user_from_token)],
     use_case: ReadGoal = Depends(ReadGoal),
-):
+) -> GoalSchema:
     if current_user:
         return await use_case.execute(goal_id, current_user.id)
     else:
@@ -79,7 +77,7 @@ async def update_goal(
     goal_id: int,
     current_user: Annotated[UserSchema, Depends(get_current_user_from_token)],
     use_case: UpdateGoal = Depends(UpdateGoal),
-):
+) -> GoalSchema:
     return await use_case.execute(
         goal_id, data.title, data.description, data.private, current_user.id
     )

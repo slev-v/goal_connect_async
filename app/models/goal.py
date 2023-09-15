@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from datetime import datetime
-from typing import AsyncIterator
+from typing import TYPE_CHECKING, AsyncIterator
 
-from sqlalchemy import ForeignKey, select, func
+from sqlalchemy import ForeignKey, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
@@ -14,7 +12,6 @@ from .target import Target
 
 if TYPE_CHECKING:
     from .user import User
-    from .target import Target
 
 
 class Goal(Base):
@@ -35,9 +32,7 @@ class Goal(Base):
         order_by="Target.id",
         cascade="save-update, merge, refresh-expire, expunge, delete, delete-orphan",
     )
-    user_id: Mapped[int] = mapped_column(
-        "user_id", ForeignKey("user.id"), nullable=False
-    )
+    user_id: Mapped[int] = mapped_column("user_id", ForeignKey("user.id"), nullable=False)
     user: Mapped[User] = relationship("User", back_populates="goals")
 
     @classmethod

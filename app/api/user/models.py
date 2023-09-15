@@ -38,18 +38,14 @@ class RegisterUser:
         async with self.async_session.begin() as session:
             uniq = await User.read_by_email_or_username(session, email, username)
             if uniq and uniq.email == email:
-                raise HTTPException(
-                    status.HTTP_400_BAD_REQUEST, detail="Email is already taken"
-                )
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Email is already taken")
             elif uniq and uniq.username == username:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Username is already taken",
                 )
 
-            user = await User.create(
-                session, email, username, get_password_hash(password)
-            )
+            user = await User.create(session, email, username, get_password_hash(password))
             return UserSchema.model_validate(user)
 
 

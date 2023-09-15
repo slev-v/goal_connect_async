@@ -1,7 +1,6 @@
 from fastapi import HTTPException, status
 
 from app.api.goal.utils import check_access_to_goal
-
 from app.db import AsyncSession
 from app.models import Goal, Target, TargetSchema
 
@@ -17,9 +16,7 @@ class AddTarget:
             goal_instance = await Goal.read_by_id(session, goal_id)
             check_access_to_goal(goal_instance, user_id)
 
-            target_instance = await Target.add(
-                session, title, target, goal_id, progress
-            )
+            target_instance = await Target.add(session, title, target, goal_id, progress)
             return TargetSchema.model_validate(target_instance)
 
 

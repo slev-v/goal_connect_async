@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import delete, select, func
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -45,9 +45,7 @@ class User(Base):
         return await session.scalar(stmt)
 
     @classmethod
-    async def read_by_username(
-        cls, session: AsyncSession, username: str
-    ) -> User | None:
+    async def read_by_username(cls, session: AsyncSession, username: str) -> User | None:
         stmt = select(cls).where(cls.username == username)
         return await session.scalar(stmt)
 
@@ -57,9 +55,7 @@ class User(Base):
         await session.execute(stmt)
 
     @classmethod
-    async def create(
-        cls, session: AsyncSession, email: str, username: str, password: str
-    ) -> User:
+    async def create(cls, session: AsyncSession, email: str, username: str, password: str) -> User:
         user = User(email=email, username=username, password=password)
         session.add(user)
         await session.flush()
