@@ -26,7 +26,13 @@ class UserRequest(BaseModel):
         if not re.match(PASSWORD_PATTERN, password):
             raise HTTPException(
                 status_code=400,
-                detail="Password must contain at least: eight symbols, one lower character, one upper character, one digit",
+                detail=(
+                    "Password must contain at least: "
+                    "eight symbols; "
+                    "one lower character; "
+                    "one upper character; "
+                    "one digit"
+                ),
             )
 
         return password

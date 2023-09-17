@@ -61,7 +61,7 @@ class Goal(Base):
     ) -> AsyncIterator[Goal]:
         stmt = (
             select(cls)
-            .where(cls.private == False)
+            .where(cls.private == False)  # noqa
             .limit(limit)
             .offset(offset)
             .options(selectinload(cls.targets))

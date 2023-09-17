@@ -11,7 +11,7 @@ from .schemas import TargetRequest, TargetResponse
 router = APIRouter(prefix="/target", tags=["target"])
 
 
-@router.post("", response_model=TargetResponse)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=TargetResponse)
 async def add_target_to_goal(
     goal_id: int,
     data: TargetRequest,

@@ -1,18 +1,14 @@
-from datetime import datetime
-
 import pytest
 from httpx import AsyncClient
-from jose import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.user.jwt import create_access_token
 from app.api.user.security import get_password_hash
-from app.config import settings
 from app.tests.utils import ID_STRING
 
 
 async def setup_data(session: AsyncSession) -> None:
-    from app.models import Goal, User, Target
+    from app.models import Goal, Target, User
 
     user1 = User(email="test1@gmail.com", username="test1", password=get_password_hash("Testtest1"))
     user2 = User(email="test2@gmail.com", username="test2", password=get_password_hash("Testtest1"))
@@ -43,8 +39,10 @@ async def test_goal_add(ac: AsyncClient, session: AsyncSession) -> None:
 
     user = await User.read_by_username(session, "test2")
     assert user
-
     cookies = {"access_token": f"Bearer {create_access_token(data={'sub': 'test2'})}"}
+    goals = [gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=100, offset=0)]
+    goals_count = len(goals)
+
     response = await ac.post(
         "/goal",
         cookies=cookies,
@@ -58,7 +56,6 @@ async def test_goal_add(ac: AsyncClient, session: AsyncSession) -> None:
     )
 
     print(response.content)
-
     assert 201 == response.status_code
     expected = {
         "title": "test4",
@@ -68,8 +65,10 @@ async def test_goal_add(ac: AsyncClient, session: AsyncSession) -> None:
         "user_id": user.id,
         "targets": [{"title": "target_test4", "target": 5, "progress": 2, "id": ID_STRING}],
     }
-
     assert expected == response.json()
+
+    goals = [gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=100, offset=0)]
+    assert len(goals) == goals_count + 1
 
 
 @pytest.mark.asyncio
@@ -80,7 +79,6 @@ async def test_all_goal_read(ac: AsyncClient, session: AsyncSession) -> None:
     response = await ac.get("/goal", cookies=cookies)
 
     print(response.content)
-
     assert 200 == response.status_code
     expected = {
         "goals": [
@@ -105,7 +103,6 @@ async def test_all_goal_read(ac: AsyncClient, session: AsyncSession) -> None:
             },
         ]
     }
-
     assert expected == response.json()
 
 
@@ -136,27 +133,24 @@ async def test_goal_public_read(ac: AsyncClient, session: AsyncSession) -> None:
             },
         ]
     }
-
     assert expected == response.json()
 
 
 @pytest.mark.asyncio
 async def test_read_goal_by_id(ac: AsyncClient, session: AsyncSession) -> None:
-    from app.models import User, Goal
+    from app.models import Goal, User
 
     await setup_data(session)
 
     user = await User.read_by_username(session, "test1")
     assert user
-    goal = [gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=1, offset=0)][0]
     cookies = {"access_token": f"Bearer {create_access_token(data={'sub': 'test1'})}"}
+    goal = [gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=1, offset=0)][0]
 
     response = await ac.get(f"/goal/{goal.id}", cookies=cookies)
 
     print(response.content)
-
     assert 200 == response.status_code
-
     expected = {
         "title": "test1",
         "description": "test1",
@@ -168,43 +162,41 @@ async def test_read_goal_by_id(ac: AsyncClient, session: AsyncSession) -> None:
             {"title": "test3", "target": 3, "progress": 0, "id": ID_STRING},
         ],
     }
-
     assert expected == response.json()
 
 
 @pytest.mark.asyncio
 async def test_goal_delete(ac: AsyncClient, session: AsyncSession) -> None:
-    from app.models import User, Goal
+    from app.models import Goal, User
 
     await setup_data(session)
 
     user = await User.read_by_username(session, "test1")
     assert user
-    goal = [gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=1, offset=0)][0]
     cookies = {"access_token": f"Bearer {create_access_token(data={'sub': 'test1'})}"}
+    goals = [gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=100, offset=0)]
+    goals_count = len(goals)
 
-    response = await ac.delete(f"/goal/{goal.id}", cookies=cookies)
+    response = await ac.delete(f"/goal/{goals[0].id}", cookies=cookies)
 
     print(response.content)
-
     assert 204 == response.status_code
 
-    new_goal = [
-        gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=100, offset=0)
-    ]
-    assert len(new_goal) == 1
+    goals = [gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=100, offset=0)]
+    assert len(goals) == goals_count - 1
 
 
 @pytest.mark.asyncio
 async def test_goal_update(ac: AsyncClient, session: AsyncSession) -> None:
-    from app.models import User, Goal
+    from app.models import Goal, User
 
     await setup_data(session)
 
     user = await User.read_by_username(session, "test1")
     assert user
-    goal = [gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=1, offset=0)][0]
     cookies = {"access_token": f"Bearer {create_access_token(data={'sub': 'test1'})}"}
+    goal = [gl async for gl in Goal.read_user_goals(session, user_id=user.id, limit=1, offset=0)][0]
+    old_goal_id = goal.id
 
     response = await ac.put(
         f"/goal/{goal.id}",
@@ -213,9 +205,7 @@ async def test_goal_update(ac: AsyncClient, session: AsyncSession) -> None:
     )
 
     assert 200 == response.status_code
-
     print(response.content)
-
     expected = {
         "title": "updated",
         "description": "updated",
@@ -227,5 +217,10 @@ async def test_goal_update(ac: AsyncClient, session: AsyncSession) -> None:
             {"title": "test3", "target": 3, "progress": 0, "id": ID_STRING},
         ],
     }
-
     assert expected == response.json()
+
+    await session.refresh(goal)
+    assert old_goal_id == goal.id
+    assert goal.title == "updated"
+    assert goal.private is False
+    assert goal.description == "updated"

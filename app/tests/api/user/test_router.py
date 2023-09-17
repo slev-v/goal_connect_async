@@ -24,23 +24,25 @@ async def setup_data(session: AsyncSession) -> None:
 
 @pytest.mark.asyncio
 async def test_user_create(ac: AsyncClient, session: AsyncSession) -> None:
-    """Create a user"""
-    # execute
+    from app.models import User
+
     response = await ac.post(
-        "/user", json={"email": "test1@gmail.com", "username": "test1", "password": "Testtest1"}
+        "/user", json={"email": "test3@gmail.com", "username": "test3", "password": "Testtest1"}
     )
 
     print(response.content)
-
     assert 201 == response.status_code
-    expected = {"id": ID_STRING, "email": "test1@gmail.com", "username": "test1"}
+    expected = {"id": ID_STRING, "email": "test3@gmail.com", "username": "test3"}
     assert expected == response.json()
+
+    user = await User.read_by_id(session, response.json()["id"])
+    assert user
+    assert user.email == "test3@gmail.com"
+    assert user.username == "test3"
 
 
 @pytest.mark.asyncio
 async def test_user_read(ac: AsyncClient, session: AsyncSession) -> None:
-    """Read a user"""
-
     await setup_data(session)
 
     response = await ac.get("user/test1")
@@ -99,3 +101,11 @@ async def test_user_delete(ac: AsyncClient, session: AsyncSession) -> None:
 
     assert 204 == response.status_code
     assert await User.read_by_username(session, "test1") is None
+
+
+@pytest.mark.asyncio
+async def test_user_logout(ac: AsyncClient, session: AsyncSession) -> None:
+    cookies = {"access_token": f"Bearer {create_access_token(data={'sub': 'test1'})}"}
+    response = await ac.delete("/user/token", cookies=cookies)
+
+    assert response.status_code == 204
