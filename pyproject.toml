@@ -25,4 +25,46 @@ testpaths = ["app"]
 addopts = "-v -rsxX -l --tb=short --strict --cov=app -p no:warnings"
 xfails_strict = true
 markers = ["tmp: Temporary", "optional: Optional"]
-env = ["APP_CONFIG_FILE=test"]
+
+[tool.poetry]
+name = "goal-connect"
+version = "0.1.0"
+description = ""
+authors = ["slev-v"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.103.1"
+pydantic-settings = "^2.0.3"
+python-multipart = "^0.0.6"
+sqlalchemy = {extras = ["postgresql-asyncpg"], version = "^2.0.20"}
+uvicorn = { extras = ["standart"], version = "^0.23.2" }
+pydantic = { extras = ["email"], version = "^2.3.0" }
+alembic = "^1.12.0"
+python-jose = "^3.3.0"
+passlib = "^1.7.4"
+bcrypt = "^4.0.1"
+
+[tool.poetry.group.test] # This part can be left out
+
+[tool.poetry.group.test.dependencies]
+black = "^23.9.1"
+ruff = "^0.0.290"
+mypy = "^1.5.1"
+pytest = "^7.4.2"
+httpx = "^0.25.0"
+pytest-cov = "^4.1.0"
+eqassertions = "^0.4"
+pytest-asyncio = "^0.21.1"
+psycopg2-binary = "^2.9.7"
+
+
+
+[tool.poetry.group.dev.dependencies]
+types-python-jose = "^3.3.4.8"
+types-passlib = "^1.7.7.13"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

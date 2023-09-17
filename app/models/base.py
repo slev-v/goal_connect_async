@@ -12,7 +12,7 @@ convention = {
 
 class Base(DeclarativeBase):
     __abstract__ = True
-    metadata = MetaData(naming_convention=convention)
+    metadata = MetaData(naming_convention=convention)  # type: ignore
 
     def __repr__(self) -> str:
         columns = ", ".join(
