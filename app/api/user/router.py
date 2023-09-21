@@ -7,7 +7,7 @@ from app.models.schema import UserSchema
 
 from .jwt import create_access_token, get_current_user_from_token
 from .models import AuthenticateUser, DeleteUser, ReadUserByUsername, RegisterUser
-from .schema import (
+from .schemas import (
     TokenResponce,
     UserRequest,
     UserResponse,
