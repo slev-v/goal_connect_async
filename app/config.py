@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
 
     JWT_SECRET: str
-    JWT_EXPIRE_MINUTE: int
+    JWT_EXPIRE_MINUTES: int
     JWT_ALGORITHM: str
 
     class Config:

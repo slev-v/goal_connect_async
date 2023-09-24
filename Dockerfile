@@ -11,7 +11,7 @@ WORKDIR /app
 
 COPY pyproject.toml ./
 
-RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
+RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev,test --no-root
 
 FROM python:3.11-slim-buster as runtime
 

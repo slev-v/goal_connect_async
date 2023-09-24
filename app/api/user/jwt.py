@@ -15,7 +15,7 @@ optional_oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/user/token", 
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=settings.JWT_EXPIRE_MINUTE)
+    expire = datetime.utcnow() + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
