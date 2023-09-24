@@ -89,3 +89,11 @@ Here's what each environment variable in the .env file represents:
 ## Usage
 
 You can find documentation by this link after running project [127.0.0.1:8000/docs](http:127.0.0.1:8000/docs)
+
+## Test
+```sh
+$ black app
+$ ruff app
+$ mypy app
+$ pytest app
+```
