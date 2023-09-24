@@ -3,20 +3,10 @@ services:
     image: postgres:15.2-alpine
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DB: goal_connect
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: sliva
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  migrations:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - postgres
-    command: ["alembic", "upgrade", "head"]
 
   fastapi:
     build:
@@ -26,8 +16,7 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
-      - migrations
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
 volumes:
   postgres_data:

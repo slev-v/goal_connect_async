@@ -13,11 +13,11 @@ from app.config import settings
 config = context.config
 
 section = config.config_ini_section
-config.set_section_option(section, "DB_HOST", settings.DB_HOST)
-config.set_section_option(section, "DB_PORT", settings.DB_PORT)
-config.set_section_option(section, "DB_USER", settings.DB_USER)
-config.set_section_option(section, "DB_NAME", settings.DB_NAME)
-config.set_section_option(section, "DB_PASS", settings.DB_PASS)
+config.set_section_option(section, "DB_HOST", settings.POSTGRES_HOST)
+config.set_section_option(section, "DB_PORT", settings.POSTGRES_PORT)
+config.set_section_option(section, "DB_USER", settings.POSTGRES_USER)
+config.set_section_option(section, "DB_NAME", settings.POSTGRES_DB)
+config.set_section_option(section, "DB_PASS", settings.POSTGRES_PASSWORD)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
