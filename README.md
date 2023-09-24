@@ -22,4 +22,4 @@ $ docker-compose exec fastapi alembic upgrade head
 
 ## Docs
 
-You can find docs by this adress: 127.0.0.1:8000/docs
+You can find docs by this address: [127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
