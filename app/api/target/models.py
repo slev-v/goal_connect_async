@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 
 from app.api.goal.utils import check_access_to_goal
-from app.db import AsyncSession
+from app.database.db import AsyncSession
 from app.models import Goal, Target, TargetSchema
 
 

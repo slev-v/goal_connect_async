@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 
-from app.db import AsyncSession
+from app.database.db import AsyncSession
 from app.models import User, UserSchema
 
 from .security import get_password_hash, verify_password

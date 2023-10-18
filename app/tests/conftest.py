@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import Session, SessionTransaction
 
 from app.config import settings
-from app.db import get_session
+from app.database.db import get_session
 from app.main import app
 from app.models.base import Base
 
