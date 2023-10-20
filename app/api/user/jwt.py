@@ -7,7 +7,7 @@ from app.config import settings
 from app.models.schema import UserSchema
 
 from .models import ReadUserByUsername
-from .utils import OAuth2PasswordBearerWithCookie
+from .security import OAuth2PasswordBearerWithCookie
 
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/user/token")
 optional_oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="/user/token", auto_error=False)
